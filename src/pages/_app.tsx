@@ -38,4 +38,5 @@ const MyApp = ({
     </SessionContextProvider>
   );
 };
+
 export default api.withTRPC(MyApp);
