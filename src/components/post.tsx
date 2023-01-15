@@ -5,9 +5,11 @@ import { useForm } from "react-hook-form";
 
 const Form = () => {
   const session = useSession();
+  const { data, refetch } = api.post.getAll.useQuery();
 
   const post = api.post.add.useMutation({
     onSuccess() {
+      refetch()
       reset();
     },
   });
@@ -54,11 +56,22 @@ const Form = () => {
 const Post = () => {
   const session = useSession();
 
+  const { data, refetch } = api.post.getAll.useQuery();
+
   return (
     <>
       <h1>Post</h1>
       <p>{session?.user.email}</p>
       <p>{session?.user.id}</p>
+      <p>
+        {data?.map((post) => (
+          <>
+            <div key={post.id}>
+              {post.title} / {post.content} / {post.id}
+            </div>
+          </>
+        ))}
+      </p>
       <Form />
     </>
   );
