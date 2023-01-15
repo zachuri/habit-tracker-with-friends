@@ -11,7 +11,7 @@ export const postRouter = createTRPCRouter({
         content: `Content: ${input.content}`,
       };
     }),
-  create: publicProcedure
+  add: publicProcedure
     .input(
       z.object({
         title: z.string(),
@@ -20,7 +20,17 @@ export const postRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.post.create({ data: input });
+      return ctx.prisma.post.create({
+        data: {
+          title: input.title,
+          content: input.content,
+          user: {
+            connect: {
+              id: input.user_id
+            }
+          }
+        },
+      });
     }),
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.post.findMany();

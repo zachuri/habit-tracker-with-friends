@@ -2,31 +2,31 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Post {
-  id      Int     @id @default(autoincrement())
-  title   String
-  content String
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id    String  @db.Uuid
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  user      User     @relation(fields: [user_id], references: [id])
+  user_id   String   @db.Uuid
   createdAt DateTime @default(now())
 }
 
 model User {
-  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  full_name       String?   
-  username        String?  
-  avatar_url      String?  
-  website         String?  
-  updated_at      DateTime @default(now())
-  posts          Post[]
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name  String?
+  username   String?
+  avatar_url String?
+  website    String?
+  updated_at DateTime @default(now())
+  posts      Post[]
   // created_at      DateTime @default(now())
   // likes          PostLike[]
   // comments       PostComment[]
