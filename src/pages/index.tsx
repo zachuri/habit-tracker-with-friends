@@ -1,6 +1,7 @@
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { api } from "../utils/api";
+import Post from "../components/post";
 
 const Home = () => {
   const session = useSession();
@@ -23,6 +24,7 @@ const Home = () => {
           <p className="text-2xl text-white">
             {hello.data ? hello.data.greeting : "Loading tRPC query..."}
           </p>
+          <Post />
         </>
       )}
     </div>
