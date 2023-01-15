@@ -19,12 +19,14 @@ import type { Session } from "@supabase/auth-helpers-react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import type { AppProps } from "next/app";
 
-function MyApp({
+import { api } from "../utils/api";
+
+const MyApp = ({
   Component,
   pageProps,
 }: AppProps<{
   initialSession: Session;
-}>) {
+}>) => {
   const [supabase] = useState(() => createBrowserSupabaseClient());
 
   return (
@@ -35,5 +37,5 @@ function MyApp({
       <Component {...pageProps} />
     </SessionContextProvider>
   );
-}
-export default MyApp;
+};
+export default api.withTRPC(MyApp);
