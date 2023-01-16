@@ -16,7 +16,7 @@ export const postRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         content: z.string(),
-        user_id: z.string().uuid(),
+        // user_id: z.string().uuid(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -26,9 +26,9 @@ export const postRouter = createTRPCRouter({
           content: input.content,
           user: {
             connect: {
-              id: input.user_id
-            }
-          }
+              id: ctx.session?.user.id,
+            },
+          },
         },
       });
     }),

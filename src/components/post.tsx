@@ -9,7 +9,7 @@ const Form = () => {
 
   const post = api.post.add.useMutation({
     onSuccess() {
-      refetch()
+      refetch();
       reset();
     },
   });
@@ -22,7 +22,7 @@ const Form = () => {
     post.mutate({
       title: data.title,
       content: data.content,
-      user_id: session?.user.id as string,
+      // user_id: session?.user.id as string,
     });
 
     reset();
@@ -63,15 +63,11 @@ const Post = () => {
       <h1>Post</h1>
       <p>{session?.user.email}</p>
       <p>{session?.user.id}</p>
-      <p>
-        {data?.map((post) => (
-          <>
-            <div key={post.id}>
-              {post.title} / {post.content} / {post.id}
-            </div>
-          </>
-        ))}
-      </p>
+      {data?.map((post) => (
+        <div key={post.id}>
+          {post.title} / {post.content} / {post.id}
+        </div>
+      ))}
       <Form />
     </>
   );
