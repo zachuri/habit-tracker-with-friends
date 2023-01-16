@@ -19,8 +19,13 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "../db";
+import { supabase } from "../../utils/supabase";
+import { Session } from "@supabase/auth-helpers-nextjs";
 
-type CreateContextOptions = Record<string, never>;
+// type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  session: Session | null;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use
@@ -33,6 +38,7 @@ type CreateContextOptions = Record<string, never>;
  */
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
+    session: _opts.session,
     prisma,
   };
 };
@@ -43,7 +49,9 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    return createInnerTRPCContext({ session });
+  });
 };
 
 /**
@@ -52,7 +60,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  * This is where the trpc api is initialized, connecting the context and
  * transformer
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -83,3 +91,29 @@ export const createTRPCRouter = t.router;
  * can still access user session data if they are logged in
  */
 export const publicProcedure = t.procedure;
+
+/**
+ * Reusable middleware that enforces users are logged in before running the
+ * procedure
+ */
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+/**
+ * Public (unauthed) procedure
+ *
+ * This is the base piece you use to build new queries and mutations on your
+ * tRPC API. It does not guarantee that a user querying is authorized, but you
+ * can still access user session data if they are logged in
+ */
+// export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
