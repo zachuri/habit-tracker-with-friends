@@ -19,7 +19,6 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "../db";
-import { supabase } from "../../utils/supabase";
 import { Session } from "@supabase/supabase-js";
 
 // type CreateContextOptions = Record<string, never>;
@@ -67,7 +66,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import { getServerAuthSession } from "./auth";
+import { getServerAuthSession } from "./auth-helper";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
