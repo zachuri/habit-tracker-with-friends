@@ -26,7 +26,8 @@ export const postRouter = createTRPCRouter({
           content: input.content,
           user: {
             connect: {
-              id: ctx.session?.user.id,
+              id: ctx.session?.user.id as string,
+              // id: input.user_id as string,
             },
           },
         },

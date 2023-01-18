@@ -21,7 +21,6 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { prisma } from "../db";
 import { supabase } from "../../utils/supabase";
 import { Session } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
 
 // type CreateContextOptions = Record<string, never>;
 type CreateContextOptions = {
@@ -49,14 +48,15 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
-  const session = await supabase.auth
-    .getSession()
-    .then(({ data: { session } }) => {
-      return session;
-    });
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+  const { req, res } = opts;
 
-  return createInnerTRPCContext({ session });
+  // Get the session from the server using the unstable_getServerSession wrapper function
+  const session = await getServerAuthSession(req, res);
+
+  return createInnerTRPCContext({
+    session,
+  });
 };
 
 /**
@@ -67,6 +67,7 @@ export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
  */
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
+import { getServerAuthSession } from "./auth";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
