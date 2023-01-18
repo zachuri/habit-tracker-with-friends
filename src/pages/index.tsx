@@ -1,6 +1,5 @@
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { api } from "../utils/api";
 import Post from "../components/post";
 
 const Home = () => {
@@ -8,21 +7,29 @@ const Home = () => {
   const supabase = useSupabaseClient();
 
   return (
-    <div className="container" style={{ padding: "50px 0 100px 0" }}>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
       {!session ? (
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          theme="dark"
-        />
+        <div className="mx-auto">
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="dark"
+            providers={["google", "facebook", "github"]}
+          />
+        </div>
       ) : (
         <>
-          <p>Signed In</p>
-          <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
+          <h2 className="text-xl">Signed In</h2>
           <Post />
+          <button
+            className="rounded border-2 p-2"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign Out
+          </button>
         </>
       )}
-    </div>
+    </main>
   );
 };
 
